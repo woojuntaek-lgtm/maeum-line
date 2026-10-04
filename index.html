@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#5b4b8a">
+<meta name="description" content="감정 하나 누르고 한 줄 쓰는 마음 일기. 오늘의 자아상태 체크와 감정 흐름까지, 내 폰에만 저장됩니다.">
+<title>마음 한 줄</title>
+<style>
+:root{
+  --bg:#f6f4fa;--card:#fff;--ink:#231f2e;--dim:#736c82;--line:#e5e0ee;
+  --pri:#5b4b8a;--pri2:#ece7f7;--r:16px;
+  --m1:#6b7280;--m2:#7c93c9;--m3:#a3a3a3;--m4:#7cbf8e;--m5:#f2b544;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#15131b;--card:#1f1c27;--ink:#ece9f3;--dim:#a49db3;--line:#332e3f;--pri:#b9a7f0;--pri2:#2c2640;
+}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif}
+body{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
+header{padding:calc(14px + env(safe-area-inset-top)) 16px 6px;max-width:640px;margin:0 auto;display:flex;align-items:baseline;justify-content:space-between}
+header h1{margin:0;font-size:20px;color:var(--pri);letter-spacing:-.4px}
+header span{font-size:12.5px;color:var(--dim)}
+main{max-width:640px;margin:0 auto;padding:6px 12px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.card h2{font-size:15px;margin:0 0 10px}
+.card h2 small{font-weight:400;color:var(--dim);font-size:12px;margin-left:4px}
+.q{font-size:18px;font-weight:700;margin:0 0 12px;letter-spacing:-.3px}
+.moods{display:flex;justify-content:space-between;gap:4px}
+.moods button{flex:1;border:2px solid transparent;background:var(--bg);border-radius:14px;padding:8px 0 6px;cursor:pointer;font:inherit;color:var(--dim);display:flex;flex-direction:column;align-items:center;gap:2px;min-height:68px}
+.moods button b{font-size:30px;line-height:1.1;font-weight:400;filter:grayscale(.35)}
+.moods button span{font-size:11px}
+.moods button.on{border-color:var(--pri);background:var(--pri2);color:var(--pri);font-weight:700}
+.moods button.on b{filter:none;transform:scale(1.1)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 11px;font:inherit;font-size:13.5px;cursor:pointer;min-height:34px}
+.chips button.on{background:var(--pri);border-color:var(--pri);color:#fff}
+@media (prefers-color-scheme:dark){.chips button.on{color:#17131f}}
+.lbl{font-size:12.5px;color:var(--dim);margin:14px 0 6px;font-weight:600}
+input[type=text],textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px}
+textarea{min-height:64px;resize:vertical}
+input:focus,textarea:focus{outline:2px solid var(--pri);outline-offset:-1px}
+.cnt{text-align:right;font-size:11.5px;color:var(--dim);margin-top:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 14px;font:inherit;font-weight:600;cursor:pointer;min-height:46px}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}
+@media (prefers-color-scheme:dark){.btn.pri{color:#17131f}}
+.btn.wide{width:100%}
+.btn.danger{color:#dc2626;border-color:#dc262655}
+.btn.sm{min-height:34px;padding:5px 10px;font-size:13px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.mt{margin-top:10px}
+.dim{color:var(--dim)}.small{font-size:12.5px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs button{flex:1;border:0;background:none;padding:8px 0 10px;font:inherit;font-size:12px;color:var(--dim);display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer}
+nav.tabs button b{font-size:19px;line-height:1.2}
+nav.tabs button.on{color:var(--pri);font-weight:700}
+/* ego */
+.ego{display:grid;gap:8px}
+.ego .it{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center}
+.ego .it p{margin:0;font-size:14px}
+.ego .it p small{display:block;color:var(--dim);font-size:11.5px}
+.dots{display:flex;gap:4px}
+.dots button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--bg);font:inherit;font-size:12px;color:var(--dim);cursor:pointer}
+.dots button.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.gram{display:flex;align-items:flex-end;gap:10px;height:120px;padding:8px 6px 0;border-bottom:1px solid var(--line)}
+.gram div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.gram i{display:block;width:70%;border-radius:8px 8px 0 0;background:var(--pri);min-height:3px;transition:height .3s}
+.gram em{font-style:normal;font-size:11px;color:var(--dim);margin-bottom:3px}
+.gramL{display:flex;gap:10px;padding:4px 6px 0}
+.gramL span{flex:1;text-align:center;font-size:11.5px;color:var(--dim)}
+.gramL b{display:block;color:var(--ink);font-size:13px}
+.note{background:var(--pri2);border-radius:12px;padding:10px 12px;font-size:13.5px;margin-top:10px}
+/* list */
+.entry{display:flex;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+.entry:last-child{border-bottom:0}
+.entry .e{font-size:26px;line-height:1.2}
+.entry .m{flex:1;min-width:0}
+.entry .m b{font-weight:600}
+.entry .m p{margin:2px 0 0;font-size:14px;word-break:break-all}
+.entry .m span{font-size:12px;color:var(--dim)}
+.tag{display:inline-block;font-size:11.5px;padding:1px 7px;border-radius:999px;background:var(--pri2);color:var(--pri);margin:2px 3px 0 0}
+/* calendar */
+.calh{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.calh strong{font-size:17px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal .w{font-size:11.5px;color:var(--dim);padding:2px 0}
+.cal .d{aspect-ratio:1/1.05;border-radius:10px;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:var(--dim);cursor:pointer;border:2px solid transparent}
+.cal .d b{font-size:20px;line-height:1.1;font-weight:400}
+.cal .d.x{visibility:hidden}
+.cal .d.t{border-color:var(--pri)}
+.cal .d.s{background:var(--pri2)}
+/* stats */
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.seg button{flex:1;border:0;background:transparent;padding:8px;font:inherit;color:var(--dim);cursor:pointer}
+.seg button.on{background:var(--pri2);color:var(--pri);font-weight:700}
+svg{display:block;width:100%;height:auto}
+.bar{display:grid;grid-template-columns:70px 1fr 34px;gap:8px;align-items:center;margin:5px 0;font-size:13px}
+.bar .t{height:9px;border-radius:5px;background:var(--line);overflow:hidden}
+.bar .t i{display:block;height:100%;background:var(--pri)}
+.bar .v{text-align:right;color:var(--dim);font-size:12px}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.kpi div{background:var(--bg);border-radius:12px;padding:10px 4px}
+.kpi b{display:block;font-size:20px}
+.kpi span{font-size:11.5px;color:var(--dim)}
+.empty{text-align:center;color:var(--dim);padding:20px 6px;font-size:14px}
+.help{border:1px solid #e1a3a3;background:#fff4f4;color:#7f1d1d;border-radius:14px;padding:12px 14px;margin-bottom:12px;font-size:14px}
+@media (prefers-color-scheme:dark){.help{background:#2a1717;color:#fecaca;border-color:#7f1d1d}}
+.help a{color:inherit;font-weight:700}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#2b2540;color:#fff;padding:10px 16px;border-radius:12px;z-index:20;font-size:14px;max-width:90vw;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.sheet .in{background:var(--card);width:100%;max-width:640px;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
+.lock{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px}
+.lock input{max-width:200px;width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;font-size:24px;letter-spacing:8px}
+details{margin-top:8px}summary{cursor:pointer;color:var(--pri);font-weight:600;font-size:14px}
+.foot{text-align:center;font-size:11.5px;color:var(--dim);padding:6px 0 16px}
+</style>
+</head>
+<body>
+<div class="lock" id="lock" hidden>
+  <div style="font-size:40px">🔒</div>
+  <p style="margin:0">비밀번호 4자리를 입력하세요</p>
+  <input type="password" id="lockIn" inputmode="numeric" maxlength="4" autocomplete="off">
+  <p class="small dim" id="lockMsg" style="margin:0"></p>
+</div>
+
+<header><h1>마음 한 줄</h1><span id="hdrDate"></span></header>
+<main>
+<!-- ============ 오늘 ============ -->
+<section id="tab-today">
+  <div id="helpBox"></div>
+  <div class="card">
+    <p class="q">지금 마음은 어떤가요?</p>
+    <div class="moods" id="moods"></div>
+    <div id="more" hidden>
+      <div class="lbl">어떤 감정이 있나요? <span class="dim" style="font-weight:400">(여러 개)</span></div>
+      <div class="chips" id="emoChips"></div>
+      <div class="lbl">무엇과 관련 있나요?</div>
+      <div class="chips" id="actChips"></div>
+      <div class="lbl" id="promptQ">한 줄로 남겨 볼까요?</div>
+      <textarea id="note" maxlength="120" placeholder="짧게 한 줄이면 충분해요"></textarea>
+      <div class="cnt"><span id="noteCnt">0</span>/120</div>
+      <button class="btn pri wide mt" id="saveBtn" type="button">기록하기</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>오늘의 자아상태 <small>교류분석 · 5문항 · 10초</small></h2>
+    <p class="small dim" style="margin:-4px 0 10px">오늘 하루 나는 어떤 모습이 많았나요? 0(거의 없음) ~ 3(아주 많음)</p>
+    <div class="ego" id="egoItems"></div>
+    <div id="egoView" class="mt"></div>
+  </div>
+
+  <div class="card">
+    <h2>오늘 기록</h2>
+    <div id="todayList"></div>
+  </div>
+</section>
+
+<!-- ============ 달력 ============ -->
+<section id="tab-cal" hidden>
+  <div class="card">
+    <div class="calh"><button class="btn sm" id="cPrev" type="button" aria-label="이전 달">◀</button><strong id="cLabel"></strong><button class="btn sm" id="cNext" type="button" aria-label="다음 달">▶</button></div>
+    <div class="cal" id="cal"></div>
+  </div>
+  <div class="card">
+    <h2 id="dayTitle">날짜를 누르세요</h2>
+    <div id="dayList"></div>
+  </div>
+</section>
+
+<!-- ============ 흐름 ============ -->
+<section id="tab-stat" hidden>
+  <div class="seg" id="range"><button type="button" data-d="7" class="on">7일</button><button type="button" data-d="30">30일</button><button type="button" data-d="90">90일</button></div>
+  <div class="card">
+    <div class="kpi" id="kpi"></div>
+  </div>
+  <div class="card">
+    <h2>기분 흐름 <small>하루 평균</small></h2>
+    <div id="chart"></div>
+  </div>
+  <div class="card">
+    <h2>자주 느낀 감정</h2>
+    <div id="emoBars"></div>
+  </div>
+  <div class="card">
+    <h2>무엇을 할 때 기분이 좋았나</h2>
+    <div id="actBars"></div>
+  </div>
+  <div class="card">
+    <h2>자아상태 평균 <small>이 기간에 체크한 날 기준</small></h2>
+    <div id="egoAvg"></div>
+  </div>
+  <div class="card">
+    <h2>돌아보기</h2>
+    <div id="reflect" class="small"></div>
+  </div>
+</section>
+
+<!-- ============ 설정 ============ -->
+<section id="tab-set" hidden>
+  <div class="card">
+    <h2>잠금</h2>
+    <p class="small dim" style="margin:-4px 0 8px">앱을 열 때 4자리 비밀번호를 묻습니다. 다른 사람이 폰을 잠깐 볼 때를 막는 가벼운 잠금이며, 비밀번호를 잊으면 풀 수 없으니 백업을 꼭 받아 두세요.</p>
+    <div class="row"><input type="text" id="pinIn" inputmode="numeric" maxlength="4" placeholder="숫자 4자리" autocomplete="off"><button class="btn" id="pinSet" type="button">설정</button></div>
+    <button class="btn mt wide" id="pinOff" type="button">잠금 해제(끄기)</button>
+  </div>
+  <div class="card">
+    <h2>백업·내보내기</h2>
+    <p class="small dim" style="margin:-4px 0 8px">기록은 이 폰의 이 브라우저에만 저장됩니다. 브라우저 데이터를 지우면 사라지니 가끔 백업을 받아 두세요.</p>
+    <div class="row"><button class="btn" id="bExp" type="button">백업 받기</button><button class="btn" id="bImpBtn" type="button">백업 불러오기</button></div>
+    <input type="file" id="bImp" accept=".json" hidden>
+    <button class="btn wide mt" id="csv" type="button">엑셀용 CSV 내보내기</button>
+    <button class="btn danger wide mt" id="wipe" type="button">모든 기록 지우기</button>
+    <p class="small dim mt" id="stat" style="margin-bottom:0"></p>
+  </div>
+  <div class="card">
+    <h2>힘들 때 연락할 곳</h2>
+    <p style="margin:0 0 6px">혼자 감당하기 어려운 마음이 들 때는 전문가와 이야기해 보세요.</p>
+    <p style="margin:0">· 자살예방 상담전화 <a href="tel:109"><b>109</b></a> (24시간)<br>· 정신건강 위기상담 <a href="tel:15770199"><b>1577-0199</b></a> (24시간)<br>· 가까운 정신건강복지센터·상담기관</p>
+  </div>
+  <div class="card small">
+    <h2>자아상태(교류분석)란?</h2>
+    <p style="margin:0">교류분석에서는 마음을 다섯 모습으로 봅니다. <b>CP</b> 비판적 부모(원칙·책임), <b>NP</b> 양육적 부모(돌봄·배려), <b>A</b> 어른(사실·판단), <b>FC</b> 자유로운 아이(즐거움·호기심), <b>AC</b> 순응하는 아이(맞춤·참음). 어느 쪽이 좋고 나쁜 것이 아니라 그날의 균형을 살펴보는 데 의미가 있습니다.</p>
+    <details><summary>안내와 면책</summary>
+      <p>이 앱은 스스로 마음을 돌아보기 위한 기록 도구입니다. 자아상태 체크는 표준화된 심리검사(이고그램 검사 등)가 아닌 간이 자기점검이며, 진단·상담·치료를 대신하지 않습니다.</p>
+      <p>입력한 내용은 서버로 보내지 않고 이 브라우저(localStorage)에만 저장됩니다.</p>
+    </details>
+  </div>
+</section>
+<div class="foot">정필 수심명 · 마음 한 줄 v1.0 · MIT License</div>
+</main>
+
+<nav class="tabs">
+  <button type="button" data-tab="today" class="on"><b>✎</b>오늘</button>
+  <button type="button" data-tab="cal"><b>▦</b>달력</button>
+  <button type="button" data-tab="stat"><b>〰</b>흐름</button>
+  <button type="button" data-tab="set"><b>⚙</b>설정</button>
+</nav>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="in">
+    <h2 style="margin:0 0 10px;font-size:16px">기록 고치기 <small class="dim" id="eWhen" style="font-weight:400;font-size:12px"></small></h2>
+    <div class="moods" id="eMoods"></div>
+    <div class="lbl">감정</div><div class="chips" id="eEmo"></div>
+    <div class="lbl">관련된 것</div><div class="chips" id="eAct"></div>
+    <div class="lbl">한 줄</div><textarea id="eNote" maxlength="120"></textarea>
+    <div class="row mt"><button class="btn danger" id="eDel" type="button">삭제</button><button class="btn" id="eClose" type="button">닫기</button><button class="btn pri" id="eSave" type="button">저장</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var KEY="maeumLine_v1";
+var DB={entries:[],ego:{},pin:""};
+try{var d=JSON.parse(localStorage.getItem(KEY)||"null");if(d&&Array.isArray(d.entries)){DB.entries=d.entries;DB.ego=d.ego||{};DB.pin=d.pin||"";}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){toast("저장 공간이 부족합니다.");}}
+function $(id){return document.getElementById(id);}
+function pad(n){return String(n).padStart(2,"0");}
+function ymd(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+function today(){return ymd(new Date());}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+var toastT;function toast(m){$("toast").textContent=m;$("toast").hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){$("toast").hidden=true;},2600);}
+var W="일월화수목금토";
+function dayLabel(s){var d=new Date(+s.slice(0,4),+s.slice(5,7)-1,+s.slice(8,10));return (+s.slice(5,7))+"월 "+(+s.slice(8,10))+"일 ("+W[d.getDay()]+")";}
+
+/* ---------- 상수 ---------- */
+var MOODS=[[5,"😄","아주 좋음"],[4,"🙂","좋음"],[3,"😐","보통"],[2,"😟","별로"],[1,"😣","힘듦"]];
+var MOODE={};MOODS.forEach(function(m){MOODE[m[0]]=m;});
+var EMOS=["기쁨","감사","평온","설렘","뿌듯","사랑","재미","안도","피곤","지루","불안","걱정","짜증","화남","서운","슬픔","외로움","무기력","부끄러움","후회"];
+var POS={"기쁨":1,"감사":1,"평온":1,"설렘":1,"뿌듯":1,"사랑":1,"재미":1,"안도":1};
+var ACTS=["일·공부","가족","친구·연인","혼자","운동","휴식·잠","식사","취미","돈","건강","이동·출퇴근","날씨"];
+var PROMPTS=["한 줄로 남겨 볼까요?","오늘 고마웠던 한 가지는?","지금 이 감정의 이유는 뭘까요?","오늘의 나에게 한마디 해 준다면?","오늘 가장 기억에 남는 순간은?","내일의 나에게 부탁하고 싶은 것은?","오늘 잘 해낸 작은 일 하나는?"];
+var EGO=[["CP","비판적 부모","원칙을 따지거나 누군가를 바로잡으려 했다"],["NP","양육적 부모","누군가를 챙기고 돌보거나 배려했다"],["A","어른","사실을 확인하고 차분히 따져서 판단했다"],["FC","자유로운 아이","하고 싶은 걸 하며 즐기고 웃었다"],["AC","순응하는 아이","눈치를 보거나 하고 싶은 말을 참았다"]];
+var SHORT={CP:"비판 부모",NP:"양육 부모",A:"어른",FC:"자유 아이",AC:"순응 아이"};
+var EGOTIP={
+  CP:"원칙과 책임감이 돋보인 날이에요. 다만 나와 남에게 너무 엄격하진 않았는지 한 번 살펴보세요.",
+  NP:"따뜻하게 챙긴 하루였네요. 남을 돌본 만큼 나 자신도 돌봐 주세요.",
+  A:"차분하게 판단한 하루였어요. 머리뿐 아니라 마음이 원하는 것도 들어 보면 좋아요.",
+  FC:"즐거움과 생기가 살아 있던 날이에요. 이 에너지를 기억해 두세요.",
+  AC:"많이 맞추고 참은 하루였나 봐요. 작은 것이라도 내 마음을 표현할 기회를 만들어 보세요."
+};
+
+/* ---------- 탭 ---------- */
+var tabs=document.querySelectorAll("nav.tabs button");
+function showTab(n){tabs.forEach(function(b){b.classList.toggle("on",b.dataset.tab===n);});["today","cal","stat","set"].forEach(function(k){$("tab-"+k).hidden=k!==n;});
+  if(n==="today")renderToday();if(n==="cal")renderCal();if(n==="stat")renderStat();if(n==="set")renderSet();window.scrollTo(0,0);}
+tabs.forEach(function(b){b.addEventListener("click",function(){showTab(b.dataset.tab);});});
+
+/* ---------- 공통 위젯 ---------- */
+function moodButtons(el,cur,onPick){
+  el.innerHTML=MOODS.map(function(m){return '<button type="button" data-v="'+m[0]+'" class="'+(cur===m[0]?"on":"")+'" aria-label="'+m[2]+'"><b>'+m[1]+'</b><span>'+m[2]+'</span></button>';}).join("");
+  el.querySelectorAll("button").forEach(function(b){b.addEventListener("click",function(){el.querySelectorAll("button").forEach(function(x){x.classList.toggle("on",x===b);});onPick(+b.dataset.v);});});
+}
+function chipButtons(el,list,sel){
+  el.innerHTML=list.map(function(x){return '<button type="button" class="'+(sel.indexOf(x)>=0?"on":"")+'">'+esc(x)+'</button>';}).join("");
+  el.querySelectorAll("button").forEach(function(b,i){b.addEventListener("click",function(){var v=list[i],k=sel.indexOf(v);if(k>=0)sel.splice(k,1);else sel.push(v);b.classList.toggle("on");});});
+}
+function entryHtml(e,showDate){
+  var m=MOODE[e.mood]||MOODS[2];
+  return '<div class="entry" data-id="'+e.id+'"><div class="e">'+m[1]+'</div><div class="m"><b>'+m[2]+'</b> <span>'+(showDate?dayLabel(e.ts.slice(0,10))+" ":"")+e.ts.slice(11,16)+'</span>'+
+    (e.note?'<p>'+esc(e.note)+'</p>':'')+'<div>'+(e.emo||[]).map(function(x){return '<span class="tag">'+esc(x)+'</span>';}).join("")+
+    (e.act||[]).map(function(x){return '<span class="tag" style="background:var(--bg);color:var(--dim)">'+esc(x)+'</span>';}).join("")+'</div></div></div>';
+}
+function bindEntries(el){el.querySelectorAll(".entry").forEach(function(x){x.addEventListener("click",function(){openEdit(x.dataset.id);});});}
+
+/* ---------- 오늘 ---------- */
+var cur={mood:0,emo:[],act:[]};
+function promptOfDay(){var d=new Date();return PROMPTS[(d.getFullYear()*372+d.getMonth()*31+d.getDate())%PROMPTS.length];}
+function renderToday(){
+  var d=new Date();$("hdrDate").textContent=(d.getMonth()+1)+"월 "+d.getDate()+"일 "+W[d.getDay()]+"요일";
+  moodButtons($("moods"),cur.mood,function(v){cur.mood=v;$("more").hidden=false;});
+  $("more").hidden=!cur.mood;
+  chipButtons($("emoChips"),EMOS,cur.emo);chipButtons($("actChips"),ACTS,cur.act);
+  $("promptQ").textContent=promptOfDay();
+  renderEgo();
+  var list=DB.entries.filter(function(e){return e.ts.slice(0,10)===today();}).sort(function(a,b){return a.ts<b.ts?1:-1;});
+  $("todayList").innerHTML=list.length?list.map(function(e){return entryHtml(e,false);}).join(""):'<div class="empty">아직 오늘 기록이 없어요.<br>위에서 지금 기분을 눌러 보세요.</div>';
+  bindEntries($("todayList"));
+  renderHelp();
+}
+$("note").addEventListener("input",function(){$("noteCnt").textContent=this.value.length;});
+$("saveBtn").addEventListener("click",function(){
+  if(!cur.mood){toast("기분을 먼저 골라 주세요.");return;}
+  var d=new Date();
+  DB.entries.push({id:uid(),ts:ymd(d)+" "+pad(d.getHours())+":"+pad(d.getMinutes()),mood:cur.mood,emo:cur.emo.slice(),act:cur.act.slice(),note:$("note").value.trim()});
+  save();cur={mood:0,emo:[],act:[]};$("note").value="";$("noteCnt").textContent="0";
+  toast("기록했어요. 오늘도 수고했어요.");renderToday();
+});
+
+/* 자아상태 */
+function renderEgo(){
+  var t=today(),v=DB.ego[t]||{};
+  $("egoItems").innerHTML=EGO.map(function(g){
+    return '<div class="it"><p>'+g[2]+'<small>'+g[0]+' · '+g[1]+'</small></p><div class="dots" data-k="'+g[0]+'">'+[0,1,2,3].map(function(n){return '<button type="button" data-n="'+n+'" class="'+(v[g[0]]===n?"on":"")+'">'+n+'</button>';}).join("")+'</div></div>';
+  }).join("");
+  $("egoItems").querySelectorAll(".dots").forEach(function(dd){dd.querySelectorAll("button").forEach(function(b){b.addEventListener("click",function(){
+    var tt=today();DB.ego[tt]=DB.ego[tt]||{};DB.ego[tt][dd.dataset.k]=+b.dataset.n;save();
+    dd.querySelectorAll("button").forEach(function(x){x.classList.toggle("on",x===b);});drawEgo(DB.ego[tt],$("egoView"),true);
+  });});});
+  drawEgo(v,$("egoView"),true);
+}
+function drawEgo(v,el,withTip,isAvg){
+  var keys=EGO.map(function(g){return g[0];});
+  var filled=keys.filter(function(k){return typeof v[k]==="number";}).length;
+  if(!filled){el.innerHTML=isAvg?'<div class="empty">이 기간에 자아상태를 체크한 날이 없어요.</div>':'';return;}
+  var h='<div class="gram">'+keys.map(function(k){var x=v[k]||0;return '<div><em>'+(Math.round(x*10)/10)+'</em><i style="height:'+(x/3*100).toFixed(0)+'%"></i></div>';}).join("")+'</div>'+
+    '<div class="gramL">'+EGO.map(function(g){return '<span><b>'+g[0]+'</b>'+SHORT[g[0]]+'</span>';}).join("")+'</div>';
+  if(withTip&&filled===5){
+    var mx=-1,top=[];keys.forEach(function(k){if(v[k]>mx){mx=v[k];top=[k];}else if(v[k]===mx)top.push(k);});
+    var mn=99,low=[];keys.forEach(function(k){if(v[k]<mn){mn=v[k];low=[k];}else if(v[k]===mn)low.push(k);});
+    var tip=mx===mn?"다섯 모습이 고르게 나타난 하루였어요.":(top.length<=2?top.map(function(k){return EGOTIP[k];}).join(" "):"여러 모습이 함께 높았던, 바쁜 하루였네요.");
+    if(mx!==mn&&low.indexOf("FC")>=0)tip+=" 오늘은 즐거움(FC)이 적었어요. 좋아하는 일 하나를 잠깐이라도 해 보세요.";
+    if(isAvg)tip="이 기간에는 "+tip.replace(/하루였/g,"시기였").replace(/날이에요/g,"시기예요").replace(/하루/g,"기간").replace(/오늘은/g,"요즘은");
+    h+='<div class="note">'+esc(tip)+'</div>';
+  }
+  el.innerHTML=h;
+}
+
+/* 힘든 날이 이어질 때 */
+function renderHelp(){
+  var days={},since=new Date();since.setDate(since.getDate()-6);var s=ymd(since);
+  DB.entries.forEach(function(e){var d=e.ts.slice(0,10);if(d>=s){(days[d]=days[d]||[]).push(e.mood);}});
+  var hard=Object.keys(days).filter(function(d){var a=days[d];return a.reduce(function(x,y){return x+y;},0)/a.length<=1.5;}).length;
+  $("helpBox").innerHTML=hard>=3?'<div class="help">요 며칠 많이 힘드셨던 것 같아요. 혼자 견디지 않으셔도 됩니다. 이야기 나눌 사람이 필요하면 <a href="tel:109">109</a>(자살예방 상담전화)나 <a href="tel:15770199">1577-0199</a>(정신건강 위기상담)에 언제든 전화해 보세요. 가까운 사람에게 마음을 털어놓는 것도 큰 힘이 됩니다.</div>':"";
+}
+
+/* ---------- 수정 ---------- */
+var editId=null,ed=null;
+function openEdit(id){
+  var e=DB.entries.filter(function(x){return x.id===id;})[0];if(!e)return;editId=id;ed={mood:e.mood,emo:(e.emo||[]).slice(),act:(e.act||[]).slice()};
+  $("eWhen").textContent=dayLabel(e.ts.slice(0,10))+" "+e.ts.slice(11,16);
+  moodButtons($("eMoods"),ed.mood,function(v){ed.mood=v;});chipButtons($("eEmo"),EMOS,ed.emo);chipButtons($("eAct"),ACTS,ed.act);
+  $("eNote").value=e.note||"";$("sheet").hidden=false;
+}
+function closeEdit(){$("sheet").hidden=true;editId=null;}
+function refresh(){var t=document.querySelector("nav.tabs button.on").dataset.tab;showTab(t);}
+$("eClose").addEventListener("click",closeEdit);
+$("sheet").addEventListener("click",function(ev){if(ev.target===this)closeEdit();});
+$("eSave").addEventListener("click",function(){var e=DB.entries.filter(function(x){return x.id===editId;})[0];if(!e)return;e.mood=ed.mood;e.emo=ed.emo;e.act=ed.act;e.note=$("eNote").value.trim();save();closeEdit();keepDay=true;refresh();toast("고쳤어요.");});
+$("eDel").addEventListener("click",function(){DB.entries=DB.entries.filter(function(x){return x.id!==editId;});save();closeEdit();keepDay=true;refresh();toast("삭제했어요.");});
+
+/* ---------- 달력 ---------- */
+var calM=null,selDay=null,keepDay=false;
+function shiftM(m,k){var d=new Date(+m.slice(0,4),+m.slice(5,7)-1+k,1);return d.getFullYear()+"-"+pad(d.getMonth()+1);}
+$("cPrev").addEventListener("click",function(){calM=shiftM(calM,-1);renderCal();});
+$("cNext").addEventListener("click",function(){calM=shiftM(calM,1);renderCal();});
+function dayAvg(){var m={};DB.entries.forEach(function(e){var d=e.ts.slice(0,10);(m[d]=m[d]||[]).push(e.mood);});var r={};for(var k in m)r[k]=m[k].reduce(function(a,b){return a+b;},0)/m[k].length;return r;}
+function renderCal(){
+  if(!calM)calM=today().slice(0,7);
+  if(!keepDay&&!selDay)selDay=today();keepDay=false;
+  $("cLabel").textContent=calM.slice(0,4)+"년 "+(+calM.slice(5))+"월";
+  var y=+calM.slice(0,4),mo=+calM.slice(5)-1,first=new Date(y,mo,1).getDay(),n=new Date(y,mo+1,0).getDate(),avg=dayAvg(),t=today();
+  var h=W.split("").map(function(w){return '<div class="w">'+w+'</div>';}).join("");
+  for(var i=0;i<first;i++)h+='<div class="d x"></div>';
+  for(var d=1;d<=n;d++){var k=calM+"-"+pad(d),a=avg[k];var em=a?MOODE[Math.round(a)][1]:"";
+    h+='<div class="d'+(k===t?" t":"")+(k===selDay?" s":"")+'" data-d="'+k+'"><b>'+em+'</b>'+d+'</div>';}
+  $("cal").innerHTML=h;
+  $("cal").querySelectorAll(".d[data-d]").forEach(function(x){x.addEventListener("click",function(){selDay=x.dataset.d;renderCal();});});
+  renderDay();
+}
+function renderDay(){
+  if(!selDay){$("dayList").innerHTML="";return;}
+  $("dayTitle").textContent=dayLabel(selDay);
+  var list=DB.entries.filter(function(e){return e.ts.slice(0,10)===selDay;}).sort(function(a,b){return a.ts<b.ts?-1:1;});
+  var eg=DB.ego[selDay];
+  var h=list.length?list.map(function(e){return entryHtml(e,false);}).join(""):'<div class="empty">이 날은 기록이 없어요.</div>';
+  $("dayList").innerHTML=h+(eg?'<div class="lbl">이 날의 자아상태</div><div id="dayEgo"></div>':'');
+  if(eg)drawEgo(eg,$("dayEgo"),false);
+  bindEntries($("dayList"));
+}
+
+/* ---------- 흐름 ---------- */
+var rangeD=7;
+document.querySelectorAll("#range button").forEach(function(b){b.addEventListener("click",function(){rangeD=+b.dataset.d;document.querySelectorAll("#range button").forEach(function(x){x.classList.toggle("on",x===b);});renderStat();});});
+function renderStat(){
+  var end=new Date(),start=new Date();start.setDate(end.getDate()-(rangeD-1));var s=ymd(start);
+  var list=DB.entries.filter(function(e){return e.ts.slice(0,10)>=s;});
+  var avg=dayAvg(),days=[];for(var i=0;i<rangeD;i++){var d=new Date(start);d.setDate(start.getDate()+i);days.push(ymd(d));}
+  var rec=days.filter(function(d){return avg[d];});
+  var mean=list.length?list.reduce(function(a,e){return a+e.mood;},0)/list.length:0;
+  /* 연속 기록 */
+  var streak=0,c=new Date();if(!avg[ymd(c)])c.setDate(c.getDate()-1);while(avg[ymd(c)]){streak++;c.setDate(c.getDate()-1);}
+  $("kpi").innerHTML='<div><b>'+rec.length+'<small style="font-size:12px">/'+rangeD+'</small></b><span>기록한 날</span></div><div><b>'+(mean?(MOODE[Math.round(mean)][1]+" "+mean.toFixed(1)):"-")+'</b><span>평균 기분</span></div><div><b>'+streak+'일</b><span>연속 기록</span></div>';
+  /* 차트 */
+  if(!rec.length){$("chart").innerHTML='<div class="empty">이 기간에 기록이 없어요.</div>';}
+  else{
+    var Wd=320,Hd=150,pl=26,pr=8,pt=10,pb=22,iw=Wd-pl-pr,ih=Hd-pt-pb;
+    var X=function(i){return pl+(rangeD===1?iw/2:iw*i/(rangeD-1));},Y=function(v){return pt+ih*(5-v)/4;};
+    var g='<svg viewBox="0 0 '+Wd+' '+Hd+'" role="img" aria-label="기분 흐름">';
+    [1,2,3,4,5].forEach(function(v){g+='<line x1="'+pl+'" x2="'+(Wd-pr)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="currentColor" stroke-opacity=".12"/><text x="'+(pl-6)+'" y="'+(Y(v)+4)+'" font-size="11" text-anchor="end">'+MOODE[v][1]+'</text>';});
+    var pts=[],path="",seg=false;
+    days.forEach(function(d,i){var a=avg[d];if(a){path+=(seg?"L":"M")+X(i).toFixed(1)+","+Y(a).toFixed(1);seg=true;pts.push([X(i),Y(a)]);}else if(rangeD<=30)seg=seg&&false;});
+    g+='<path d="'+path+'" fill="none" stroke="var(--pri)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+    if(rangeD<=30)pts.forEach(function(p){g+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.5" fill="var(--pri)"/>';});
+    var step=rangeD<=7?1:(rangeD<=30?7:30);
+    days.forEach(function(d,i){if(i%step===0||(i===rangeD-1&&(i%step)>step/2)){g+='<text x="'+X(i).toFixed(1)+'" y="'+(Hd-6)+'" font-size="10" text-anchor="middle" fill="currentColor" fill-opacity=".6">'+(+d.slice(5,7))+'/'+(+d.slice(8,10))+'</text>';}});
+    g+='</svg>';$("chart").innerHTML='<div style="color:var(--dim)">'+g+'</div>';
+  }
+  /* 감정 빈도 */
+  var ec={};list.forEach(function(e){(e.emo||[]).forEach(function(x){ec[x]=(ec[x]||0)+1;});});
+  var ea=Object.keys(ec).map(function(k){return[k,ec[k]];}).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
+  var mx=ea.length?ea[0][1]:1;
+  $("emoBars").innerHTML=ea.length?ea.map(function(x){return '<div class="bar"><span>'+esc(x[0])+'</span><span class="t"><i style="width:'+(x[1]/mx*100)+'%;'+(POS[x[0]]?'':'opacity:.55')+'"></i></span><span class="v">'+x[1]+'회</span></div>';}).join(""):'<div class="empty">감정을 골라 기록하면 여기에 모여요.</div>';
+  /* 활동별 평균 기분 */
+  var ac={};list.forEach(function(e){(e.act||[]).forEach(function(x){(ac[x]=ac[x]||[]).push(e.mood);});});
+  var aa=Object.keys(ac).filter(function(k){return ac[k].length>=1;}).map(function(k){var a=ac[k];return[k,a.reduce(function(x,y){return x+y;},0)/a.length,a.length];}).sort(function(a,b){return b[1]-a[1];});
+  $("actBars").innerHTML=aa.length?aa.map(function(x){return '<div class="bar"><span>'+esc(x[0])+'</span><span class="t"><i style="width:'+((x[1]-1)/4*100)+'%"></i></span><span class="v">'+MOODE[Math.round(x[1])][1]+'</span></div>';}).join("")+'<p class="small dim" style="margin:6px 0 0">막대가 길수록 그 일과 함께한 기록의 기분이 좋았어요.</p>':'<div class="empty">"무엇과 관련 있나요"를 골라 기록하면 보여요.</div>';
+  /* 자아상태 평균 */
+  var sum={},cnt={};Object.keys(DB.ego).filter(function(d){return d>=s;}).forEach(function(d){var v=DB.ego[d];EGO.forEach(function(g){if(typeof v[g[0]]==="number"){sum[g[0]]=(sum[g[0]]||0)+v[g[0]];cnt[g[0]]=(cnt[g[0]]||0)+1;}});});
+  var av={};EGO.forEach(function(g){if(cnt[g[0]])av[g[0]]=sum[g[0]]/cnt[g[0]];});
+  drawEgo(av,$("egoAvg"),Object.keys(av).length===5,true);
+  /* 돌아보기 */
+  var r=[];
+  if(list.length){
+    var best=list.slice().sort(function(a,b){return b.mood-a.mood||(a.ts<b.ts?1:-1);})[0];
+    if(best.mood>=4)r.push('<b>가장 좋았던 순간</b> · '+dayLabel(best.ts.slice(0,10))+' '+MOODE[best.mood][1]+(best.note?' “'+esc(best.note)+'”':''));
+    var posN=0,negN=0;list.forEach(function(e){(e.emo||[]).forEach(function(x){if(POS[x])posN++;else negN++;});});
+    if(posN+negN)r.push('<b>감정 균형</b> · 긍정 감정 '+posN+'회, 힘든 감정 '+negN+'회'+(posN>=negN?' — 좋은 감정이 더 많았어요.':' — 힘든 감정이 많았던 기간이에요. 나를 위한 쉼을 챙겨 주세요.'));
+    if(aa.length>=2)r.push('<b>기분을 올려 준 것</b> · '+esc(aa[0][0])+(aa[aa.length-1][1]<aa[0][1]?' / <b>조금 지치게 한 것</b> · '+esc(aa[aa.length-1][0]):''));
+  }
+  $("reflect").innerHTML=r.length?r.map(function(x){return '<p style="margin:0 0 8px">'+x+'</p>';}).join(""):'<div class="empty">기록이 쌓이면 돌아볼 거리를 정리해 드려요.</div>';
+}
+
+/* ---------- 설정 ---------- */
+function renderSet(){var dd=Object.keys(dayAvg()).sort();$("stat").textContent="기록 "+DB.entries.length+"개 · 기록한 날 "+dd.length+"일"+(dd.length?" ("+dd[0]+" ~ "+dd[dd.length-1]+")":"")+(DB.pin?" · 잠금 켜짐":"");}
+$("pinSet").addEventListener("click",function(){var v=$("pinIn").value;if(!/^\d{4}$/.test(v)){toast("숫자 4자리를 입력하세요.");return;}DB.pin=v;save();$("pinIn").value="";renderSet();toast("잠금을 설정했어요. 다음에 열 때부터 적용돼요.");});
+$("pinOff").addEventListener("click",function(){DB.pin="";save();renderSet();toast("잠금을 껐어요.");});
+function download(name,text,type){var b=new Blob([text],{type:type});var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);}
+$("bExp").addEventListener("click",function(){var o={entries:DB.entries,ego:DB.ego};download("마음한줄_백업_"+today()+".json",JSON.stringify(o),"application/json");});
+$("bImpBtn").addEventListener("click",function(){$("bImp").click();});
+$("bImp").addEventListener("change",function(){var f=this.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var d=JSON.parse(rd.result);if(!d||!Array.isArray(d.entries))throw 0;
+  var ids={};DB.entries.forEach(function(e){ids[e.id]=1;});var n=0;d.entries.forEach(function(e){if(e&&e.id&&e.ts&&!ids[e.id]){DB.entries.push(e);n++;}});
+  if(d.ego)for(var k in d.ego)if(!DB.ego[k])DB.ego[k]=d.ego[k];save();renderSet();toast("백업에서 "+n+"개를 합쳤어요.");}catch(e){toast("백업 파일이 아니에요.");}};rd.readAsText(f);this.value="";});
+$("csv").addEventListener("click",function(){
+  var rows=[["날짜","시각","기분(1-5)","기분","감정","관련","한 줄","CP","NP","A","FC","AC"]];
+  DB.entries.slice().sort(function(a,b){return a.ts<b.ts?-1:1;}).forEach(function(e){var g=DB.ego[e.ts.slice(0,10)]||{};rows.push([e.ts.slice(0,10),e.ts.slice(11),e.mood,MOODE[e.mood][2],(e.emo||[]).join(" "),(e.act||[]).join(" "),e.note||"",g.CP==null?"":g.CP,g.NP==null?"":g.NP,g.A==null?"":g.A,g.FC==null?"":g.FC,g.AC==null?"":g.AC]);});
+  download("마음한줄_"+today()+".csv","﻿"+rows.map(function(r){return r.map(function(c){c=String(c);return /[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c;}).join(",");}).join("\r\n"),"text/csv");
+});
+var armed=false;$("wipe").addEventListener("click",function(){var b=this;if(!armed){armed=true;b.textContent="정말 지울까요? 한 번 더 누르면 모두 삭제";setTimeout(function(){armed=false;b.textContent="모든 기록 지우기";},4000);return;}
+  DB.entries=[];DB.ego={};save();armed=false;b.textContent="모든 기록 지우기";renderSet();toast("모든 기록을 지웠어요.");});
+
+/* ---------- 잠금 ---------- */
+function unlock(){$("lock").hidden=true;renderToday();}
+if(DB.pin){$("lock").hidden=false;setTimeout(function(){$("lockIn").focus();},50);
+  $("lockIn").addEventListener("input",function(){if(this.value.length===4){if(this.value===DB.pin)unlock();else{$("lockMsg").textContent="비밀번호가 달라요.";this.value="";}}});
+}else renderToday();
+window.__ml={DB:DB,save:save};
+})();
+</script>
+</body></html>
